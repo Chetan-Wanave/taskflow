@@ -1,0 +1,6 @@
+Q1_VERDICT: no
+Q1_MECHANISM: The legacy/ PreToolUse guard lives only in `.claude/settings.local.json`, and whether a clone receives that file is decided by `.gitignore`, which excludes it from version control.
+Q1_EVIDENCE: `.claude/settings.local.json`
+Q1_FIX: `.claude/settings.json`
+Q2_VERDICT: no
+Q2_WHY: Both settings files are shown in full and their only hooks are a Write/Edit logger and a `file_path`-based `/legacy/` path test — nothing inspects file contents or localStorage keys, so `todo-app-items` is policy text only.

@@ -21,8 +21,8 @@ Monorepo:
 - `schema.sql` — checked-in copy of the canonical DDL, byte-identical to
   `backend/src/main/resources/db/migration/V1__init.sql`. Change one → change both.
 - `docker-compose.yml` — dev MySQL 8.4.
-- Dated `*-2026-09.*` files at root — design/plan homework artifacts; reference material,
-  not code.
+- Dated `*-2026-09.*` files and folders at root — design/plan homework artifacts; reference
+  material, not code.
 
 ## Run commands
 

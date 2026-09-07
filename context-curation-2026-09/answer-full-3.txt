@@ -1,0 +1,6 @@
+Q1_VERDICT: no
+Q1_MECHANISM: The legacy/ guard is the PreToolUse hook in `.claude/settings.local.json`, and whether a clone receives it is decided by `.gitignore`, which excludes that file from the repo.
+Q1_EVIDENCE: `.claude/settings.local.json`
+Q1_FIX: `.claude/settings.json`
+Q2_VERDICT: no
+Q2_WHY: The PreToolUse hook only tests `tool_input.file_path` against `/legacy/`, so it cannot see code that writes or deletes the `todo-app-items` localStorage key — that rule lives only as prose in CLAUDE.md and as a soft check in `.claude/agents/reviewer.md`.

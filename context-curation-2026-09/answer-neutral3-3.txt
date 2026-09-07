@@ -1,0 +1,6 @@
+Q1_VERDICT: no
+Q1_MECHANISM: The legacy/ PreToolUse guard exists only in `.claude/settings.local.json`, a per-machine local settings file that Claude Code treats as untracked/gitignored, so whether a clone gets it depends on that file being committed — which by convention it is not, and no tracked settings file carries the guard.
+Q1_EVIDENCE: "`legacy/` — the old vanilla app. **Read-only forever** (a PreToolUse hook in `.claude/settings.local.json` refuses any Write/Edit under `legacy/` ...)"
+Q1_FIX: `.claude/settings.json`
+Q2_VERDICT: no
+Q2_WHY: Both settings files' hooks only match Write|Edit and test `.tool_input.file_path` against `/legacy/`, so nothing inspects or blocks writes to the localStorage key `todo-app-items`.

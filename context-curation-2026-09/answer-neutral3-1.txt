@@ -1,0 +1,6 @@
+Q1_VERDICT: INSUFFICIENT CONTEXT
+Q1_MECHANISM: The only legacy/ guard is the PreToolUse hook in `.claude/settings.local.json`, so whether a clone is protected depends entirely on whether that `*.local.json` file is git-tracked or ignored — and no `.gitignore` or tracking information is included in the provided context.
+Q1_EVIDENCE: INSUFFICIENT CONTEXT — no `.gitignore` line (or any git-tracking record) for `.claude/settings.local.json` appears in the three curated sources.
+Q1_FIX: `.claude/settings.json`
+Q2_VERDICT: no
+Q2_WHY: The only PreToolUse hook tests `.tool_input.file_path` against the string `/legacy/`, which cannot see or block a localStorage key such as `todo-app-items`, and no other hook in either settings file addresses it.

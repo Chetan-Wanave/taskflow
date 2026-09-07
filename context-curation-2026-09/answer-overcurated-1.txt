@@ -1,0 +1,6 @@
+Q1_VERDICT: INSUFFICIENT CONTEXT
+Q1_MECHANISM: The legacy/ PreToolUse guard lives only in `.claude/settings.local.json`, so whether a clone receives it depends on whether that path is git-tracked or excluded by the repo's `.gitignore` — and the `.gitignore` was withheld from this context (the sources are labeled "curated-minus-gitignore").
+Q1_EVIDENCE: INSUFFICIENT CONTEXT — the deciding line would be the `.gitignore` entry covering `.claude/settings.local.json`, which is not present in the provided sources.
+Q1_FIX: `.claude/settings.json`
+Q2_VERDICT: no
+Q2_WHY: Both settings files are complete and their only PreToolUse guard tests `tool_input.file_path` against `/legacy/`, so nothing inspects file contents or a localStorage key like `todo-app-items`.

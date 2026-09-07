@@ -1,0 +1,6 @@
+Q1_VERDICT: no
+Q1_MECHANISM: The legacy/ PreToolUse guard exists only in `.claude/settings.local.json`, and that file is listed in `.gitignore`, so it is never committed and a fresh clone gets no such hook.
+Q1_EVIDENCE: `.claude/settings.local.json`
+Q1_FIX: `.claude/settings.json`
+Q2_VERDICT: no
+Q2_WHY: Both complete settings files define hooks only on Write|Edit `tool_input.file_path` matching `/legacy/`, and no hook inspects code or content for the `todo-app-items` localStorage key, so that rule is documentation-only.
