@@ -1,0 +1,42 @@
+Hook refusal evidence — 2026-09-06
+==================================
+
+Setup: PreToolUse hook in .claude/settings.local.json, matcher "Write|Edit",
+protecting the legacy/ directory (this repo's migration rollback artifact —
+chosen over the exercise's .env example because frontend/.env is a file the
+build legitimately writes).
+
+Hook command:
+  jq -e '.tool_input.file_path // "" | test("/legacy/") | not' >/dev/null \
+    || { echo 'refused: legacy/ is the migration rollback artifact — read-only forever' >&2; exit 2; }
+
+Action: Claude attempted
+  Write /Users/chewan/Desktop/TODO/legacy/hook-refusal-probe.txt
+
+Terminal output (verbatim tool error returned to Claude):
+
+  PreToolUse:Write hook error: [jq -e '.tool_input.file_path // "" | test("/legacy/") | not' >/dev/null || { echo 'refused: legacy/ is the migration rollback artifact — read-only forever' >&2; exit 2; }]: refused: legacy/ is the migration rollback artifact — read-only forever
+
+Result: exit code 2 blocked the Write BEFORE it executed. The file
+legacy/hook-refusal-probe.txt was never created (verified with ls).
+The PostToolUse log hook recorded nothing for this call — it never got
+past PreToolUse, which is precisely the difference between a hook that
+watches (PostToolUse: the write would already be on disk, this would be
+a log line) and a hook that stops (PreToolUse exit 2: the work never runs).
+
+Addendum — 2026-09-07 (harness capstone audit)
+----------------------------------------------
+The guard above was moved from .claude/settings.local.json (gitignored — no clone
+received it) to the committed .claude/settings.json, and rewritten: the unanchored
+test("/legacy/") became a project-root check (contains "/legacy/" AND path inside
+$CLAUDE_PROJECT_DIR), failing CLOSED with distinct messages. Pipe-test matrix of the
+committed command (a mid-session settings edit can't fire live — hooks snapshot at
+session start; same limitation extension-stack-2026-09.md recorded for SessionStart):
+
+  repo legacy/ path                  → refused, exit 2
+  repo non-legacy path               → allowed, exit 0
+  <root>/frontend/../legacy/app.js   → refused, exit 2   (traversal caught)
+  /tmp/legacy/scratch.txt            → allowed, exit 0   (Restrictions permit /tmp)
+  CLAUDE_PROJECT_DIR with trailing / → refused, exit 2
+  CLAUDE_PROJECT_DIR unset           → refused, exit 2   (fails closed)
+  jq missing (exit 127 stub)         → "legacy-guard hook error … blocking write", exit 2

@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Taskflow reminder: run /review-changes on staged work before committing.'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "root=\"${CLAUDE_PROJECT_DIR%/}\"; jq -e --arg root \"$root\" '(.tool_input.file_path // \"\") as $p | (($p | contains(\"/legacy/\")) and ($root == \"\" or ($p | startswith($root + \"/\")))) | not' >/dev/null; s=$?; if [ $s -eq 0 ]; then exit 0; elif [ $s -eq 1 ]; then echo 'refused: legacy/ is the migration rollback artifact — read-only forever' >&2; exit 2; else echo \"legacy-guard hook error (jq exit $s — jq missing or bad input); blocking write, fix the hook\" >&2; exit 2; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

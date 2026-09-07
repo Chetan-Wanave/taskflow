@@ -1,0 +1,17 @@
+# Claude Code local artifacts
+.claude-tool-log.txt
+.claude/settings.local.json
+.playwright-mcp/
+
+# dependencies & build output
+node_modules/
+frontend/dist/
+backend/build/
+backend/.gradle/
+
+# local env
+frontend/.env
+
+# OS noise
+.DS_Store
+*.log
