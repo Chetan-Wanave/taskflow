@@ -18,6 +18,10 @@ populated, permissions is deliberately empty (see the rejection below).
 - **`.claude/settings.json` · SessionStart reminder** — *effectiveness*. Weakest artifact,
   held honestly: one echo pairing the "when" (commit time) with `/review-changes`. It
   steered this very session's commit flow; strip it the day it stops doing that.
+- **`.claude/settings.json` · SessionStart `compact` re-injection** — *reliability*. Prints
+  `task-checklist.md` into the fresh context after every compaction (matcher `compact`),
+  so a long task's steps, decisions, and current status survive the summary. Guarded on
+  file existence — silent when no task file is present. Evidence: `session-recovery-2026-09.md`.
 - **`.claude/settings.local.json`** — *reliability*. Only genuinely per-machine state: MCP
   approval (`enabledMcpjsonServers`) and the PostToolUse write log (course-era
   instrumentation, sunset after grading — but it supplied this audit's key evidence).

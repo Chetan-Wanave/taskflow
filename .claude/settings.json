@@ -8,6 +8,15 @@
             "command": "echo 'Taskflow reminder: run /review-changes on staged work before committing.'"
           }
         ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"${CLAUDE_PROJECT_DIR:-.}/task-checklist.md\"; if [ -f \"$f\" ]; then echo '--- task-checklist.md re-injected by the SessionStart:compact hook. Read it, then continue from Current Status. ---'; cat \"$f\"; fi"
+          }
+        ]
       }
     ],
     "PreToolUse": [
