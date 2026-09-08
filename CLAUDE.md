@@ -31,7 +31,7 @@ Frontend (`cd frontend`):
 ```bash
 npm run dev        # Vite dev server, http://localhost:5173
 npm run build      # tsc -b && vite build
-npm run test       # vitest run (99 tests, incl. adapter contract suite vs BOTH adapters)
+npm run test       # vitest run (166 tests, incl. adapter contract suite vs BOTH adapters)
 npm run lint       # oxlint
 npm run preview
 ```
@@ -82,6 +82,10 @@ strings (`crypto.randomUUID()`), `CHAR(36)` in MySQL, plain `String` in JPA.
   `createAdapter.ts` picks one from `VITE_STORAGE_MODE` (`local` default | `api`).
   A shared vitest contract suite (`src/test/adapterContract.test.ts`) runs against both
   (ApiAdapter over MSW) — it is what keeps the dormant adapter honest.
+- **Domain unit tests** live in `src/test/` (not co-located with the source), open with a
+  header comment saying WHY the module is pinned, and take `now` as a fixed ISO string —
+  never the wall clock, never fake timers. Pure functions in `src/domain/` (`dates`,
+  `position`, `validation`, `mutations`) each have a direct test file there.
 - **Zustand store** (`src/store/useAppStore.ts`): every mutation is optimistic — snapshot →
   apply pure function from `src/domain/mutations.ts` → await adapter → on rejection restore
   snapshot + error toast. Filter/search/edit state is view-state only, never persisted.
