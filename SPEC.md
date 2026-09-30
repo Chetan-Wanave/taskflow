@@ -50,7 +50,7 @@ Groovy build.gradle (spec text mentioning 3.3.x / Kotlin DSL is superseded by th
 - **[must-have]** Animated complete toggle backed by completedAt timestamp — The signature moment: SVG stroke-draw check, strikethrough sweep, counter tick (spec in visualSpec).
 - **[must-have]** Priority NONE/LOW/MEDIUM/HIGH shown as checkbox border tint + flag in edit popover — Legacy parity; color never the only signal (label on hover/popover).
 - **[must-have]** Due dates (date-only) with relative labels (Today/Tomorrow/Fri/Sep 12), overdue in danger red; hand-built month-grid DatePicker — Never native <input type=date>; string compare against local 'today' — no Date('YYYY-MM-DD') parsing anywhere.
-- **[must-have]** All/Active/Completed filters with live counts, debounced client-side text search, remaining counter — Filter + search are view-state in the store, never persisted.
+- **[must-have]** All/Active/Completed filters with live counts, debounced client-side text search over title and notes, remaining counter — Filter + search are view-state in the store, never persisted. Search semantics pinned under Behaviour requirements → SRCH.
 - **[must-have]** Drag-and-drop reorder via @dnd-kit with keyboard fallback, persisted sparse BIGINT positions — Drop = midpoint; renormalize batch when gap < 2. Both adapters implement identical math from domain/position.ts.
 - **[must-have]** Clear completed + 5s undo toast for delete and clear-completed — Undo re-creates via normal createTask with original id+position (client UUIDs make this idempotent). No confirm dialogs.
 - **[must-have]** localStorage persistence: 'todo.app.v2' versioned envelope + one-time v1→v2 migration; legacy key untouched — Exact algorithm in migrationPlan; migration unit-tested against malformed inputs.
@@ -69,6 +69,25 @@ Groovy build.gradle (spec text mentioning 3.3.x / Kotlin DSL is superseded by th
 - **[cut]** Subtasks UI — parent_id column + parentId field ship now; checklist UI later, one level max.
 - **[cut]** Reminders, recurring tasks, collaboration, calendar/kanban views, stats dashboard — P1's kill list adopted verbatim; half-working versions read as broken.
 - **[cut]** Optimistic locking (version column, 409 stale) — Single-user; additive later with @Version.
+
+## Behaviour requirements (EARS + acceptance scenarios)
+
+Spec-anchored section. A commit that changes user-visible behaviour adds or revises lines here in the same diff as the code. Requirement lines use EARS patterns — ubiquitous "THE <system> SHALL", event-driven "WHEN <trigger>", state-driven "WHILE <state>", unwanted-behaviour "IF <condition> THEN", optional-feature "WHERE <feature>". Each group carries Given/When/Then scenarios; the named test file is what pins them.
+
+### SRCH — Text search (added 2026-09-30; pinned in frontend/src/test/selectors.test.ts)
+
+- SRCH-1 (event-driven): WHEN the user enters a non-blank search query, THE frontend SHALL show only tasks whose title OR notes contain the trimmed query as a case-insensitive substring.
+- SRCH-2 (state-driven): WHILE a search query is active, THE frontend SHALL still apply the status filter and the tag filter — the three are AND-ed.
+- SRCH-3 (unwanted): IF a task's notes are null, THEN THE frontend SHALL match on the title alone and SHALL NOT raise or treat the task as matching.
+- SRCH-4 (ubiquitous): THE search query SHALL be view-state — never persisted and never sent to the backend. The REST GET /tasks?search= parameter stays title-only in v1 and is not used by ApiAdapter; widening it is a separate, cross-layer change.
+
+Acceptance scenarios:
+1. Given a task titled "Book flights" with notes "Use the Amex voucher", When the user searches "voucher", Then the task is visible.
+2. Given the same task, When the user searches "VOUCHER", Then the task is visible.
+3. Given a task titled "Water plants" with null notes, When the user searches "voucher", Then the task is hidden and no error is raised.
+4. Given a completed task whose notes contain "voucher" and the Active filter selected, When the user searches "voucher", Then that task is hidden.
+5. Given tasks with and without a tag, When the user searches "voucher" with that tag filter active, Then only the tagged matching tasks are visible.
+6. Given any tasks, When the search query is whitespace only, Then every task that passes the other filters is visible.
 
 ## Canonical data model
 
@@ -190,7 +209,7 @@ TaskResponse (used everywhere a task is returned):
 TagResponse: { "id": "uuid", "name": "work", "color": "#5B5BD6"|null, "createdAt": "..." }
 
 TASKS
-GET    /api/v1/tasks?status=all|active|completed&search=&tagId=  → 200 TaskResponse[] ordered by position ASC (params optional, combinable; default status=all)
+GET    /api/v1/tasks?status=all|active|completed&search=&tagId=  → 200 TaskResponse[] ordered by position ASC (params optional, combinable; default status=all; search= is title-only and unused by ApiAdapter — client search is view-state, see SRCH-4)
 POST   /api/v1/tasks   { "id"?: uuid (client-generated accepted; server mints if absent), "title": req, "notes"?, "priority"? (default NONE), "dueDate"?, "position"? (server appends max+1024 if absent), "parentId"?: null, "tagIds"?: [] }  → 201 + Location: /api/v1/tasks/{id} + TaskResponse · 409 if id exists
 GET    /api/v1/tasks/{id}  → 200 TaskResponse · 404
 PATCH  /api/v1/tasks/{id}  body: any subset of { "title", "notes", "priority", "dueDate", "completed": boolean, "position", "tagIds" } — absent = unchanged; explicit null clears notes/dueDate; completed:true sets completedAt=now UTC server-side, false nulls it  → 200 TaskResponse · 404 · 400

@@ -16,9 +16,18 @@ export function selectVisibleTasks(state: ViewState): Task[] {
     if (state.filter === 'active' && task.completedAt !== null) return false
     if (state.filter === 'completed' && task.completedAt === null) return false
     if (state.tagFilterId !== null && !task.tagIds.includes(state.tagFilterId)) return false
-    if (query.length > 0 && !task.title.toLowerCase().includes(query)) return false
+    if (query.length > 0 && !matchesQuery(task, query)) return false
     return true
   })
+}
+
+/**
+ * SPEC.md → Behaviour requirements → SRCH-1/SRCH-3: case-insensitive substring
+ * over title OR notes; a task with null notes is matched on its title alone.
+ */
+function matchesQuery(task: Task, query: string): boolean {
+  if (task.title.toLowerCase().includes(query)) return true
+  return task.notes !== null && task.notes.toLowerCase().includes(query)
 }
 
 export interface Counts {
