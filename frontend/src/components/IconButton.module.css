@@ -1,0 +1,22 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.iconButton:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+
+.danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}

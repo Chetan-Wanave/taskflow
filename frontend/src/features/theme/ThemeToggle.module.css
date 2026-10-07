@@ -1,0 +1,30 @@
+.toggle {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  padding: 2px;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  color: var(--text-tertiary);
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.option:hover {
+  color: var(--text-primary);
+}
+
+.active {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-1);
+  color: var(--text-primary);
+}

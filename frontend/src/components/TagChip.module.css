@@ -1,0 +1,23 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--bg-subtle);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.5;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+.clickable:hover {
+  background: var(--bg-active);
+  color: var(--text-secondary);
+}
+
+.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}

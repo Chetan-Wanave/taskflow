@@ -1,0 +1,153 @@
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: background var(--dur-fast) var(--ease-out);
+  animation: rowIn var(--dur-base) var(--ease-out);
+  touch-action: manipulation;
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row:hover {
+  background: var(--bg-subtle);
+}
+
+.row:focus-visible,
+.selected {
+  background: var(--bg-subtle);
+}
+
+.dragging {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-2);
+  transform: scale(1.02);
+  z-index: 2;
+  position: relative;
+}
+
+.leaving {
+  height: 0 !important;
+  min-height: 0;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: scale(0.98);
+  overflow: hidden;
+  transition:
+    opacity 150ms var(--ease-in),
+    transform 150ms var(--ease-in),
+    height var(--dur-base) var(--ease-out) 150ms,
+    padding var(--dur-base) var(--ease-out) 150ms,
+    min-height var(--dur-base) var(--ease-out) 150ms;
+}
+
+.row .box {
+  margin-top: 2px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Reserve line height so the meta line never shifts layout on hover. */
+  padding-top: 1px;
+}
+
+.label {
+  align-self: flex-start; /* strikethrough must span the text, not the row */
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  cursor: default;
+  /* Strikethrough sweep: 1px gradient line that grows left → right. */
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 55%;
+  background-size: 0% 1px;
+}
+
+.labelDone {
+  color: var(--text-tertiary);
+  background-size: 100% 1px;
+  transition:
+    background-size 240ms var(--ease-out),
+    color 240ms var(--ease-out);
+}
+
+.labelEdit {
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-2);
+  margin: -1px 0;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: 12px;
+  min-height: 18px;
+}
+
+.due {
+  font-variant-numeric: tabular-nums;
+}
+
+.today {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.future {
+  color: var(--text-secondary);
+}
+
+.overdue {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.notesHint {
+  color: var(--text-tertiary);
+  border-bottom: 1px dotted var(--border-strong);
+}
+
+.actions {
+  display: inline-flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.row:hover .actions,
+.row:focus-visible .actions,
+.selected .actions,
+.actions:focus-within {
+  opacity: 1;
+}

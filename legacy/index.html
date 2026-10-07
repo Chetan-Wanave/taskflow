@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TODO</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <h1>TODO</h1>
+  <p class="subtitle" id="today"></p>
+
+  <form class="new-todo" id="form">
+    <input type="text" id="input" placeholder="What needs to be done?" autocomplete="on" autofocus>
+    <select id="priority" title="Priority">
+      <option value="none" selected>Priority</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+    <input type="date" id="due" title="Due date">
+    <button type="submit">Add</button>
+  </form>
+
+  <input type="search" class="search" id="search" placeholder="Search tasks… (Esc to clear)" autocomplete="off">
+
+  <div class="toolbar">
+    <span id="count"></span>
+    <div class="filters" id="filters">
+      <button data-filter="all" class="active">All</button>
+      <button data-filter="active">Active</button>
+      <button data-filter="completed">Completed</button>
+    </div>
+  </div>
+
+  <ul class="list" id="list"></ul>
+  <p class="empty" id="empty" hidden>Nothing here — add a task above.</p>
+
+  <div class="footer">
+    <span>Double-click a task to edit</span>
+    <button id="clear">Clear completed</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

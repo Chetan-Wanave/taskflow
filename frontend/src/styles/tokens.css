@@ -1,0 +1,126 @@
+/* Design tokens — components use ONLY semantic tokens, never raw hex. */
+
+:root {
+  color-scheme: light dark;
+
+  /* Light theme */
+  --bg-app: #f7f7f8;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f1f3;
+  --bg-active: #e9e9ec;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  /* 4.85:1 on --bg-app, 4.60:1 on --bg-subtle (spec: all text pairs >= 4.5:1);
+     kept lighter than --text-secondary so the hierarchy stays visible. */
+  --text-tertiary: #6c6c76;
+  --accent: #5b5bd6;
+  --accent-hover: #5151cd;
+  --accent-soft: #ededfc;
+  --danger: #e5484d;
+  --danger-soft: #feebec;
+  --success: #30a46c;
+  --prio-high: #e5484d;
+  --prio-med: #dc8a0e;
+  --prio-low: #0b84d0;
+  --focus: rgba(91, 91, 214, 0.45);
+
+  /* Spacing — 4px base scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 999px;
+
+  /* Elevation (light) */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-3:
+    0 16px 40px -8px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+
+  /* Motion */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 260ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Type */
+  --font-sans: 'InterVariable', Inter, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Dark theme — hand-tuned, never pure black; surfaces lighten as they rise. */
+[data-theme='dark'] {
+  --bg-app: #101013;
+  --bg-surface: #17171b;
+  --bg-subtle: #1e1e23;
+  --bg-active: #26262c;
+  --border: #26262c;
+  --border-strong: #34343b;
+  --text-primary: #ededf0;
+  --text-secondary: #a9a9b2;
+  /* 5.57:1 on --bg-app, 4.87:1 on --bg-subtle (spec: all text pairs >= 4.5:1);
+     kept darker than --text-secondary so the hierarchy stays visible. */
+  --text-tertiary: #8a8a96;
+  --accent: #7c7cf0;
+  --accent-hover: #8f8ff4;
+  --accent-soft: #232338;
+  --danger: #ff6369;
+  --danger-soft: #3b1a1c;
+  --success: #3dd68c;
+  --prio-high: #ff6369;
+  --prio-med: #f5a623;
+  --prio-low: #4ca9f5;
+  --focus: rgba(124, 124, 240, 0.5);
+
+  /* Elevation in dark = lighter surface + border; shadows barely used. */
+  --shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-2: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 1px var(--border-strong);
+  --shadow-3:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 1px var(--border-strong),
+    0 16px 40px -8px rgba(0, 0, 0, 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-app: #101013;
+    --bg-surface: #17171b;
+    --bg-subtle: #1e1e23;
+    --bg-active: #26262c;
+    --border: #26262c;
+    --border-strong: #34343b;
+    --text-primary: #ededf0;
+    --text-secondary: #a9a9b2;
+    --text-tertiary: #8a8a96;
+    --accent: #7c7cf0;
+    --accent-hover: #8f8ff4;
+    --accent-soft: #232338;
+    --danger: #ff6369;
+    --danger-soft: #3b1a1c;
+    --success: #3dd68c;
+    --prio-high: #ff6369;
+    --prio-med: #f5a623;
+    --prio-low: #4ca9f5;
+    --focus: rgba(124, 124, 240, 0.5);
+
+    --shadow-1: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --shadow-2: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 1px var(--border-strong);
+    --shadow-3:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 1px var(--border-strong),
+      0 16px 40px -8px rgba(0, 0, 0, 0.55);
+  }
+}

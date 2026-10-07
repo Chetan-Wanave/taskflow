@@ -1,0 +1,115 @@
+.box {
+  position: relative;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--check-color, var(--border-strong));
+  background: transparent;
+  transition:
+    background 150ms var(--ease-out),
+    border-color 150ms var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.pNone {
+  --check-color: var(--border-strong);
+  --check-tint: var(--bg-active);
+}
+
+.pLow {
+  --check-color: var(--prio-low);
+}
+
+.pMed {
+  --check-color: var(--prio-med);
+}
+
+.pHigh {
+  --check-color: var(--prio-high);
+}
+
+.box:hover:not(.checked) {
+  background: var(--check-tint, color-mix(in srgb, var(--check-color) 12%, transparent));
+}
+
+.box:active {
+  transform: scale(0.92);
+}
+
+.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+.checked .path {
+  stroke-dashoffset: 0;
+}
+
+.ring {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Ceremony: only when checked in this session (never on mount). */
+.celebrate {
+  animation: checkPop var(--dur-base) var(--ease-spring);
+}
+
+.celebrate .path {
+  animation: checkDraw var(--dur-base) var(--ease-out);
+}
+
+.celebrate .ring {
+  animation: ringBloom 300ms var(--ease-out) forwards;
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkDraw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ringBloom {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-soft);
+    opacity: 1;
+  }
+  60% {
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,36 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-9) var(--space-4);
+  opacity: 0;
+  animation: emptyIn var(--dur-base) var(--ease-out) 150ms forwards;
+}
+
+@keyframes emptyIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.icon {
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.action {
+  margin-top: var(--space-4);
+}

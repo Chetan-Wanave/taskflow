@@ -1,0 +1,40 @@
+.tick {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  vertical-align: bottom;
+}
+
+.in {
+  display: inline-block;
+  animation: tickIn 160ms var(--ease-out);
+}
+
+.out {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  animation: tickOut 160ms var(--ease-out) forwards;
+}
+
+@keyframes tickIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes tickOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}

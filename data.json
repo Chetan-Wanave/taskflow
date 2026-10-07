@@ -1,0 +1,226 @@
+{
+  "alertDetails": {
+    "alertSetting": "Traveler",
+    "dateTime": "2026-10-01T08:20:20.753276587Z",
+    "equipment": {
+      "current": "73H"
+    },
+    "flightIndex": 0,
+    "legIndex": 0,
+    "minutesBeforeDeparture": 1440,
+    "type": "Flight Departure Update"
+  },
+  "id": "6080440608",
+  "trip": {
+    "attributes": {
+      "CUSTOMER_ID": "Etraveli_Prod",
+      "OBFUSCATED_REFERENCE": "true"
+    },
+    "cancelled": false,
+    "createdDateTime": "2026-05-26T13:21:32.778895516Z",
+    "emailAddresses": [],
+    "id": "802190653",
+    "legs": [
+      {
+        "flights": [
+          {
+            "airlineConfirmationCode": "KVK8PC",
+            "arrival": {
+              "airportCode": "STN",
+              "airportFsCode": "STN",
+              "airportIataCode": "STN",
+              "dateTime": "2026-10-02T11:30:00"
+            },
+            "bookedAirlineCode": "RK",
+            "bookedAirlineFsCode": "RK*",
+            "bookedAirlineIataCode": "RK",
+            "departure": {
+              "airportCode": "OSL",
+              "airportFsCode": "OSL",
+              "airportIataCode": "OSL",
+              "dateTime": "2026-10-02T10:20:00"
+            },
+            "flightIndex": 0,
+            "flightNumber": "1393",
+            "flightStatuses": [
+              {
+                "arrival": {
+                  "airportCode": "STN",
+                  "airportFsCode": "STN",
+                  "airportIataCode": "STN",
+                  "scheduledGateDateTime": "2026-10-02T11:30:00"
+                },
+                "departure": {
+                  "airportCode": "OSL",
+                  "airportFsCode": "OSL",
+                  "airportIataCode": "OSL",
+                  "scheduledGateDateTime": "2026-10-02T10:20:00"
+                },
+                "equipmentIataCode": "73H",
+                "flightNumber": "1393",
+                "id": 1411758491,
+                "operatingAirlineCode": "RK",
+                "operatingAirlineFsCode": "RK*",
+                "operatingAirlineIataCode": "RK",
+                "primaryMarketingAirlineCode": "RK",
+                "primaryMarketingAirlineFsCode": "RK*",
+                "primaryMarketingAirlineIataCode": "RK",
+                "status": "Scheduled"
+              }
+            ]
+          },
+          {
+            "airlineConfirmationCode": "CVEMJP",
+            "arrival": {
+              "airportCode": "PSA",
+              "airportFsCode": "PSA",
+              "airportIataCode": "PSA",
+              "dateTime": "2026-10-02T15:50:00"
+            },
+            "bookedAirlineCode": "FR",
+            "bookedAirlineFsCode": "FR",
+            "bookedAirlineIataCode": "FR",
+            "departure": {
+              "airportCode": "STN",
+              "airportFsCode": "STN",
+              "airportIataCode": "STN",
+              "dateTime": "2026-10-02T12:45:00"
+            },
+            "flightIndex": 1,
+            "flightNumber": "588",
+            "flightStatuses": [
+              {
+                "arrival": {
+                  "airportCode": "PSA",
+                  "airportFsCode": "PSA",
+                  "airportIataCode": "PSA",
+                  "estimatedGateDateTime": "2026-10-02T15:50:00",
+                  "scheduledGateDateTime": "2026-10-02T15:50:00"
+                },
+                "departure": {
+                  "airportCode": "STN",
+                  "airportFsCode": "STN",
+                  "airportIataCode": "STN",
+                  "estimatedGateDateTime": "2026-10-02T12:45:00",
+                  "scheduledGateDateTime": "2026-10-02T12:45:00"
+                },
+                "equipmentIataCode": "73H",
+                "flightNumber": "588",
+                "id": 1411723591,
+                "operatingAirlineCode": "MW",
+                "operatingAirlineFsCode": "MAY",
+                "operatingAirlineIataCode": "MW",
+                "primaryMarketingAirlineCode": "FR",
+                "primaryMarketingAirlineFsCode": "FR",
+                "primaryMarketingAirlineIataCode": "FR",
+                "status": "Scheduled"
+              }
+            ]
+          }
+        ],
+        "legIndex": 0
+      },
+      {
+        "flights": [
+          {
+            "airlineConfirmationCode": "E3RVRT",
+            "arrival": {
+              "airportCode": "CPH",
+              "airportFsCode": "CPH",
+              "airportIataCode": "CPH",
+              "dateTime": "2026-10-04T18:40:00"
+            },
+            "bookedAirlineCode": "FR",
+            "bookedAirlineFsCode": "FR",
+            "bookedAirlineIataCode": "FR",
+            "departure": {
+              "airportCode": "PSA",
+              "airportFsCode": "PSA",
+              "airportIataCode": "PSA",
+              "dateTime": "2026-10-04T16:25:00"
+            },
+            "flightIndex": 0,
+            "flightNumber": "8973",
+            "flightStatuses": [
+              {
+                "arrival": {
+                  "airportCode": "CPH",
+                  "airportFsCode": "CPH",
+                  "airportIataCode": "CPH",
+                  "scheduledGateDateTime": "2026-10-04T18:40:00"
+                },
+                "departure": {
+                  "airportCode": "PSA",
+                  "airportFsCode": "PSA",
+                  "airportIataCode": "PSA",
+                  "scheduledGateDateTime": "2026-10-04T16:25:00"
+                },
+                "flightNumber": "8973",
+                "id": 0,
+                "operatingAirlineCode": "MW",
+                "operatingAirlineFsCode": "MAY",
+                "operatingAirlineIataCode": "MW",
+                "primaryMarketingAirlineCode": "FR",
+                "primaryMarketingAirlineFsCode": "FR",
+                "primaryMarketingAirlineIataCode": "FR",
+                "status": "Scheduled"
+              }
+            ]
+          },
+          {
+            "airlineConfirmationCode": "XBQRDX",
+            "arrival": {
+              "airportCode": "OSL",
+              "airportFsCode": "OSL",
+              "airportIataCode": "OSL",
+              "dateTime": "2026-10-04T21:40:00"
+            },
+            "bookedAirlineCode": "D8",
+            "bookedAirlineFsCode": "D8*",
+            "bookedAirlineIataCode": "D8",
+            "departure": {
+              "airportCode": "CPH",
+              "airportFsCode": "CPH",
+              "airportIataCode": "CPH",
+              "dateTime": "2026-10-04T20:30:00"
+            },
+            "flightIndex": 1,
+            "flightNumber": "3234",
+            "flightStatuses": [
+              {
+                "arrival": {
+                  "airportCode": "OSL",
+                  "airportFsCode": "OSL",
+                  "airportIataCode": "OSL",
+                  "scheduledGateDateTime": "2026-10-04T21:40:00"
+                },
+                "departure": {
+                  "airportCode": "CPH",
+                  "airportFsCode": "CPH",
+                  "airportIataCode": "CPH",
+                  "scheduledGateDateTime": "2026-10-04T20:30:00",
+                  "terminal": "2"
+                },
+                "flightNumber": "3234",
+                "id": 0,
+                "operatingAirlineCode": "D8",
+                "operatingAirlineFsCode": "D8*",
+                "operatingAirlineIataCode": "D8",
+                "primaryMarketingAirlineCode": "D8",
+                "primaryMarketingAirlineFsCode": "D8*",
+                "primaryMarketingAirlineIataCode": "D8",
+                "status": "Scheduled"
+              }
+            ]
+          }
+        ],
+        "legIndex": 1
+      }
+    ],
+    "monitorable": true,
+    "passengers": [],
+    "referenceNumber": "EFTC41H4W2JVFL02",
+    "restricted": false,
+    "updatedDateTime": "2026-05-26T13:21:32.778895516Z"
+  }
+}
