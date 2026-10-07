@@ -89,6 +89,24 @@ Acceptance scenarios:
 5. Given tasks with and without a tag, When the user searches "voucher" with that tag filter active, Then only the tagged matching tasks are visible.
 6. Given any tasks, When the search query is whitespace only, Then every task that passes the other filters is visible.
 
+### NOTES — Task edit popover focus (added 2026-10-07; pinned in frontend/src/test/taskEditPopover.test.tsx)
+
+- NOTES-1 (ubiquitous): THE task edit popover SHALL keep keyboard focus on whichever control inside it currently has focus across any re-render of the popover or its parent row.
+- NOTES-2 (event-driven): WHEN the user types a character into the Notes textarea, THE frontend SHALL append that character to the Notes draft and SHALL leave focus and caret in the textarea.
+- NOTES-3 (event-driven): WHEN the user types a character into the "Add a tag" input, THE frontend SHALL append that character to the tag-name draft and SHALL leave focus in the input.
+- NOTES-4 (event-driven): WHEN the popover opens, THE frontend SHALL move focus once to the control marked for initial focus (the currently selected priority button), and SHALL NOT move focus again until the popover is closed and reopened.
+- NOTES-5 (event-driven): WHEN the Notes textarea loses focus, or the popover closes via Escape or outside pointer-down, THE frontend SHALL commit the Notes draft to the task (trimmed-empty → null; no write when unchanged).
+- NOTES-6 (state-driven): WHILE the popover is open, THE frontend SHALL trap Tab / Shift+Tab inside the popover (wrap last→first and first→last), and WHEN Escape is pressed SHALL close the popover and return focus to the control that opened it.
+- NOTES-7 (unwanted): IF the popover re-renders because of a store update (tag toggle, priority change, due-date change, multi-tab reconcile) THEN THE frontend SHALL NOT reset or move focus and SHALL NOT discard the Notes draft.
+
+Acceptance scenarios:
+1. Given a task with no notes and its edit popover open, When the user clicks the Notes textarea and types "Call the venue" without pausing, Then the textarea shows "Call the venue" and keyboard focus is still on the textarea.
+2. Given the edit popover open, When the user clicks the "Add a tag" input and types "travel", Then the input shows "travel" and keyboard focus is still on the input.
+3. Given a task with priority Medium, When its edit popover opens, Then keyboard focus is on the "Medium" priority button.
+4. Given the popover open and focus on its last focusable control (the Notes textarea), When the user presses Tab, Then focus moves to the first focusable control inside the popover (the "None" priority button) and does not leave the popover.
+5. Given the popover open with focus anywhere inside it, When the user presses Escape, Then the popover closes, any Notes draft is committed, and focus returns to the control that opened it (the row's Edit button).
+6. Given the popover open, When the user presses the pointer down outside the popover and outside its Edit button, Then the popover closes and any Notes draft is committed.
+
 ## Canonical data model
 
 Canonical domain model — every layer (TS types, localStorage JSON, REST DTOs, JPA entities, MySQL DDL) describes exactly this, camelCase in JSON/TS, snake_case in SQL.

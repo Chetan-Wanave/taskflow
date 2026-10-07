@@ -56,15 +56,23 @@ export function Popover({
     }
   }, [open, anchor, width, align])
 
-  // Initial focus + outside-click dismissal.
+  // Initial focus — once per open, never on re-render. Keyed on `open` only:
+  // consumers pass a fresh onClose on every render, and re-running this on
+  // that would yank focus out of whatever the user is typing in.
   useLayoutEffect(() => {
     if (!open) return
     const panel = panelRef.current
-    if (panel) {
-      const first = panel.querySelector<HTMLElement>('[data-autofocus]') ??
-        panel.querySelector<HTMLElement>(FOCUSABLE)
-      ;(first ?? panel).focus()
-    }
+    if (!panel) return
+    const first = panel.querySelector<HTMLElement>('[data-autofocus]') ??
+      panel.querySelector<HTMLElement>(FOCUSABLE)
+    ;(first ?? panel).focus()
+  }, [open])
+
+  // Outside-click dismissal. onClose stays in deps on purpose: consumers close
+  // over draft state (e.g. the Notes draft), so a stale closure would commit
+  // stale values. Re-subscribing a document listener never moves focus.
+  useLayoutEffect(() => {
+    if (!open) return
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node
       if (panelRef.current?.contains(target)) return
