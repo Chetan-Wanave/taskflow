@@ -90,9 +90,11 @@ The fix must not loosen the popover's existing accessibility contract (SPEC.md "
 - **SC-004**: `cd frontend && npx vitest run` reports every pre-existing test still passing (baseline 173) plus the new tests; `cd frontend && npx tsc -p tsconfig.app.json --noEmit` is clean.
 - **SC-005**: Manual: `npm run dev`, open a task's popover, type "hello world" into Notes → the textarea reads "hello world"; click outside → reopen → Notes still reads "hello world"; reload the page → still "hello world" (persisted to `todo.app.v2`).
 - **SC-006**: Manual: in the same popover, type "travel" into the tag input and press Enter → a `#travel` chip appears on the row.
+- **SC-007** *(added at review gate 2026-10-18)*: Manual, **real browser (not jsdom)**: `npm run dev`, click a task's Edit button → `document.activeElement` is the selected priority button inside the dialog, not `<body>`. jsdom does not enforce "hidden elements cannot take focus", so SC-003's initial-focus test cannot stand in for this. Automated proxy: a component test that records `getComputedStyle(el).visibility` at the moment `.focus()` is called on the initial-focus target and asserts it is `visible`.
 
 ## Assumptions
 
+- *(gate 2026-10-18)* The panel is rendered `visibility: hidden` until it has been positioned (`pos` set), and browsers refuse `.focus()` on a hidden element. "Focus once on open" therefore means once the panel is **visible**, not once the component mounts. Before the T1 fix this was masked: the initial-focus effect re-ran on the next render (new `onClose`) when the panel was already visible.
 - "Cursor is out of box" means keyboard focus leaves the textarea (observed: it lands on the Priority group), not a visual/CSS caret issue.
 - "Restores focus to the row" on Escape is satisfied by the existing behaviour of focusing the row's Edit button (the popover's anchor); changing that target is out of scope.
 - The fix is frontend-only; the data model, adapters, REST contract, and SQL are untouched (notes are already persisted correctly once a draft commits).

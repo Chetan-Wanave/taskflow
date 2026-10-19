@@ -47,6 +47,24 @@
 
 ---
 
+## T1b [US3] Gate remediation: initial focus must wait until the panel is visible
+
+**Added at review gate 2026-10-18** (see `plan.md` → Amendment, `review-gate-2026-10.md`). **Depends on**: T1 (committed as `efc7b19`; the T1 "staged, awaiting review" status above is stale). **Must land before T2** — T2's Tab-wrap tests assume focus starts inside the dialog.
+
+**Files**
+- `frontend/src/test/taskEditPopover.test.tsx` (modify — one test)
+- `frontend/src/components/Popover.tsx` (modify — focus effect deps)
+
+**Exact change**
+1. Test first: **"initial focus is applied while the panel is visible"** — `vi.spyOn(HTMLElement.prototype, 'focus')` recording `getComputedStyle(this).visibility` per call; open the popover; assert the call that targeted the Medium radio saw `'visible'` and the final `activeElement` is that radio. Must FAIL on current code (call sees `'hidden'`).
+2. In `Popover.tsx`: `const placed = pos !== null`; focus effect → `if (!open || !placed) return …` with deps `[open, placed]`.
+3. Re-run the single test → GREEN; whole suite → 175 passed; `tsc` clean.
+4. Manual, real browser: click Edit → `document.activeElement` is the selected priority button (SC-007); type "hello world" in Notes still works.
+
+**Commit**: `fix(frontend): popover initial focus waits until panel is visible (SPEC NOTES-4, SC-007)`
+
+---
+
 ## T2 [US2, US3] Pin the rest of the popover contract: tag input, focus trap, Escape, blur commit
 
 **Depends on**: T1 (same test file).
@@ -61,7 +79,12 @@
 4. **"Escape commits the Notes draft, closes the popover, and returns focus to the Edit button"**: type `'Bring ID'` into Notes, `user.keyboard('{Escape}')`, assert `queryByRole('dialog')` is null, `waitFor` → `tasks[0].notes === 'Bring ID'` and the `todo.app.v2` envelope's `tasks[0].notes === 'Bring ID'`, `activeElement` is the Edit button.
 5. **"blurring the Notes textarea commits the draft without closing the popover"**: type `'  '` (whitespace only) into Notes on a task with notes `null`, `user.tab()`, assert dialog still present and `tasks[0].notes === null` (trim→null, no write); then type `'Keep'`, `user.tab()`, `waitFor` → `tasks[0].notes === 'Keep'`.
 
-**Verify**: `cd frontend && npx vitest run --reporter=dot` → 179 passed; `npx tsc -p tsconfig.app.json --noEmit` → clean.
+6. *(gate)* **"pointer-down outside commits the Notes draft and closes the popover"**: type `'Call'`, `user.pointer` down on `document.body`, assert dialog gone and `tasks[0].notes === 'Call'` (NOTES-5, US1-4, US3-5).
+7. *(gate)* **"clicking a tag chip, Due date button or priority button keeps focus on that control"** (US3-6): seed one tag; click each, assert `activeElement` is the clicked control.
+8. *(gate)* **"a store re-render while typing keeps focus and the draft"** (NOTES-7): type `'ab'` in Notes, toggle a priority via `useAppStore.getState().patchTask(...)` from outside, type `'c'`, assert value `'abc'` and focus still on Notes.
+Test 4 additionally spies `patchTask` and asserts exactly **one** call for the Escape path (suspected double commit; if it fails, fix `commitNotes`/`close` in a separate task, do not widen T2).
+
+**Verify**: `cd frontend && npx vitest run --reporter=dot` → 183 passed (174 + T1b 1 + T2 8); `npx tsc -p tsconfig.app.json --noEmit` → clean.
 
 **Commit**: `test(frontend): pin task edit popover focus trap, Escape, blur-commit and tag input`
 

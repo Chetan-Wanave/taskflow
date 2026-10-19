@@ -43,6 +43,16 @@ Not the cause (ruled out by reading): `lib/keyboard.ts:43` returns early for any
 
 Not touched: `TaskEditPopover.tsx`, `TaskRow.tsx`, `QuickAdd.tsx`, `lib/keyboard.ts`, any CSS, any `domain/`, adapters, backend, `legacy/`.
 
+## Amendment — review gate 2026-10-18 (before T2)
+
+**Defect in the shipped T1 design.** Plan said effect (a) keyed `[open]` "fires when `open` becomes true; `panelRef.current` is set by then exactly as today". True for the ref, false for visibility. On the opening commit `pos === null`, so the panel has `visibility: hidden` (`Popover.tsx:125`). Layout effects run in order: the positioning effect calls `setPos` (applies on the *next* render), then the focus effect calls `.focus()` on a still-hidden element, which browsers ignore. Old code only worked because the next render brought a new `onClose` and re-ran the effect. Verified 2026-10-18 on `npm run dev`: after clicking Edit, `activeElement` is `BODY`, dialog `visibility: visible`. jsdom passed because it does not apply the hidden-focus rule.
+
+**Fix (new task T1b, below):** derive `const placed = pos !== null` and key the focus effect on `[open, placed]`, returning early unless both are true. `placed` flips once per open (`pos` is reset to `null` when closed), so it still cannot re-run on keystrokes, resize, or scroll (those change `pos` values, not `placed`). Effect (b) unchanged.
+
+**Other plan gaps closed in tasks.md:** outside pointer-down commit (NOTES-5 / US3-5), click-keeps-focus (US3-6), and the draft/focus surviving a store re-render (NOTES-7) had no test. Added to T2 as tests 6-8. T2 test 4 also asserts the Escape path writes once (suspected duplicate commit: Escape → `close()` then `anchor.focus()` blurs the textarea, whose `onBlur` runs the same stale-closure `commitNotes` again — **unverified**, T2 will show it).
+
+**Assumption now explicit:** panel visibility gating (see spec Assumptions).
+
 ## Risks
 
 - **Initial autofocus regression** — effect (a) still fires when `open` becomes true; `panelRef.current` is set by then exactly as today (same `useLayoutEffect` timing). Pinned by the initial-focus assertion in T1.
