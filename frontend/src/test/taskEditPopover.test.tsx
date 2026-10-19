@@ -5,7 +5,7 @@
 
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AppData, Task } from '../domain/types'
 import { TaskList } from '../features/tasks/TaskList'
 import { STORAGE_KEY } from '../storage/migration'
@@ -51,7 +51,10 @@ describe('task edit popover keeps focus while typing', () => {
     localStorage.clear()
   })
 
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
 
   it('typing several characters in Notes keeps focus and the full draft', async () => {
     const task = makeTask({ title: 'Buy', priority: 'MEDIUM' })
@@ -68,5 +71,27 @@ describe('task edit popover keeps focus while typing', () => {
     await user.type(notes, 'Call the venue')
     expect(notes).toHaveValue('Call the venue')
     expect(document.activeElement).toBe(notes)
+  })
+
+  // Browsers refuse .focus() on visibility:hidden elements; jsdom does not, so
+  // record the computed visibility at call time instead of trusting activeElement.
+  it('initial focus is applied while the panel is visible', async () => {
+    const task = makeTask({ title: 'Buy', priority: 'MEDIUM' })
+    seed([task])
+    const calls: { text: string; visibility: string }[] = []
+    const realFocus = HTMLElement.prototype.focus
+    vi.spyOn(HTMLElement.prototype, 'focus').mockImplementation(function (this: HTMLElement, ...args) {
+      calls.push({ text: this.textContent ?? '', visibility: getComputedStyle(this.closest('[role="dialog"]') ?? this).visibility })
+      return realFocus.apply(this, args)
+    })
+    render(<TaskList />)
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Edit task (E to rename)' }))
+    await screen.findByRole('dialog')
+    const medium = screen.getByRole('radio', { name: 'Medium' })
+    const inDialog = calls.filter((c) => c.text.includes('Medium'))
+    expect(inDialog.length).toBeGreaterThan(0)
+    expect(inDialog.every((c) => c.visibility === 'visible')).toBe(true)
+    expect(document.activeElement).toBe(medium)
   })
 })

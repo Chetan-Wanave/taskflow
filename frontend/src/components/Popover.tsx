@@ -56,17 +56,21 @@ export function Popover({
     }
   }, [open, anchor, width, align])
 
-  // Initial focus — once per open, never on re-render. Keyed on `open` only:
-  // consumers pass a fresh onClose on every render, and re-running this on
-  // that would yank focus out of whatever the user is typing in.
+  // Initial focus — once per open, never on re-render. Keyed on `open` and
+  // `placed` only: consumers pass a fresh onClose on every render, and re-running
+  // this on that would yank focus out of whatever the user is typing in. It must
+  // wait for `placed` because the panel is visibility:hidden until positioned,
+  // and browsers ignore .focus() on hidden elements. `placed` flips once per
+  // open (pos resets to null on close), so resize/scroll never re-trigger it.
+  const placed = pos !== null
   useLayoutEffect(() => {
-    if (!open) return
+    if (!open || !placed) return
     const panel = panelRef.current
     if (!panel) return
     const first = panel.querySelector<HTMLElement>('[data-autofocus]') ??
       panel.querySelector<HTMLElement>(FOCUSABLE)
     ;(first ?? panel).focus()
-  }, [open])
+  }, [open, placed])
 
   // Outside-click dismissal. onClose stays in deps on purpose: consumers close
   // over draft state (e.g. the Notes draft), so a stale closure would commit

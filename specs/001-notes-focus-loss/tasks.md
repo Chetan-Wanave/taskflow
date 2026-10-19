@@ -63,6 +63,11 @@
 
 **Commit**: `fix(frontend): popover initial focus waits until panel is visible (SPEC NOTES-4, SC-007)`
 
+**Status**: DONE 2026-10-19
+- Red: new test failed — `.focus()` on the Medium radio saw `visibility: hidden`.
+- Green after `[open, placed]` change; full suite 9 files, **175 passed**; `tsc -p tsconfig.app.json --noEmit` exit 0.
+- Real browser (`npm run dev`, API mode, read-only probe): click Edit → `activeElement` = "Low" radio (`aria-checked=true`) inside the dialog (was `BODY`); real keypresses `a`,`b`,`c` in the tag input → value `abc`, focus kept.
+
 ---
 
 ## T2 [US2, US3] Pin the rest of the popover contract: tag input, focus trap, Escape, blur commit
