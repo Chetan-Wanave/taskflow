@@ -55,6 +55,13 @@ async function openPopover(task: Task) {
   return user
 }
 
+function spyOnPatchTask() {
+  const real = useAppStore.getState().patchTask
+  const spy = vi.fn(real)
+  useAppStore.setState({ patchTask: spy })
+  return { spy, restore: () => useAppStore.setState({ patchTask: real }) }
+}
+
 describe('task edit popover keeps focus while typing', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -135,5 +142,43 @@ describe('task edit popover keeps focus while typing', () => {
     screen.getByRole('radio', { name: 'None' }).focus()
     await user.tab({ shift: true })
     expect(document.activeElement).toBe(screen.getByLabelText('Notes'))
+  })
+
+  it('Escape commits the Notes draft, closes the popover, and returns focus to the Edit button', async () => {
+    const user = await openPopover(makeTask())
+    const notes = screen.getByLabelText('Notes')
+    await user.click(notes)
+    await user.type(notes, 'Bring ID')
+    await user.keyboard('{Escape}')
+
+    expect(screen.queryByRole('dialog')).toBeNull()
+    await waitFor(() => expect(useAppStore.getState().tasks[0].notes).toBe('Bring ID'))
+    const envelope = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') as AppData
+    expect(envelope.tasks[0].notes).toBe('Bring ID')
+    expect(document.activeElement).toBe(
+      screen.getByRole('button', { name: 'Edit task (E to rename)' }),
+    )
+  })
+
+  it('blurring the Notes textarea commits the draft without closing the popover', async () => {
+    const { spy, restore } = spyOnPatchTask()
+    try {
+      const user = await openPopover(makeTask())
+      const notes = screen.getByLabelText('Notes')
+      await user.click(notes)
+      await user.type(notes, '  ')
+      await user.tab()
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      expect(useAppStore.getState().tasks[0].notes).toBeNull()
+      expect(spy).not.toHaveBeenCalled()
+
+      await user.click(notes)
+      await user.type(notes, 'Keep')
+      await user.tab()
+      await waitFor(() => expect(useAppStore.getState().tasks[0].notes).toBe('Keep'))
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    } finally {
+      restore()
+    }
   })
 })

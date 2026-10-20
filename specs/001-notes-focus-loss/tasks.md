@@ -87,11 +87,21 @@
 6. *(gate)* **"pointer-down outside commits the Notes draft and closes the popover"**: type `'Call'`, `user.pointer` down on `document.body`, assert dialog gone and `tasks[0].notes === 'Call'` (NOTES-5, US1-4, US3-5).
 7. *(gate)* **"clicking a tag chip, Due date button or priority button keeps focus on that control"** (US3-6): seed one tag; click each, assert `activeElement` is the clicked control.
 8. *(gate)* **"a store re-render while typing keeps focus and the draft"** (NOTES-7): type `'ab'` in Notes, toggle a priority via `useAppStore.getState().patchTask(...)` from outside, type `'c'`, assert value `'abc'` and focus still on Notes.
-Test 4 additionally spies `patchTask` and asserts exactly **one** call for the Escape path (suspected double commit; if it fails, fix `commitNotes`/`close` in a separate task, do not widen T2).
+Test 4 additionally spied `patchTask` for exactly **one** call on the Escape path: **it failed with 2 calls (2026-10-20)** — double commit confirmed. Per this plan the count assertion moved to T4 and test 4 keeps only the behaviour assertions.
 
 **Verify**: `cd frontend && npx vitest run --reporter=dot` → 183 passed (174 + T1b 1 + T2 8); `npx tsc -p tsconfig.app.json --noEmit` → clean.
 
 **Commit**: `test(frontend): pin task edit popover focus trap, Escape, blur-commit and tag input`
+
+---
+
+## T4 [US1] Escape commits the Notes draft exactly once (found by T2b)
+
+**Depends on**: T2b. **Why**: Escape → `Popover.onKeyDown` calls `onClose()` (`close` → `commitNotes` → `patchTask`), then `anchor.focus()` blurs the textarea, whose `onBlur={commitNotes}` runs the same stale-closure `commitNotes` again (draft state not yet cleared, `task.notes` still old) → second `patchTask` with identical value. Violates NOTES-5 "no write when unchanged".
+
+**Exact change**: test first in `taskEditPopover.test.tsx` — "Escape writes the Notes draft exactly once" (spy `patchTask`, assert 1 call) → RED (2). Then fix in `TaskEditPopover.tsx` (smallest change that makes `commitNotes` idempotent within one event, e.g. skip when already committed via a ref, or compare against the latest task value) → GREEN; full suite + `tsc` clean.
+
+**Commit**: `fix(frontend): Escape no longer commits the Notes draft twice (SPEC NOTES-5)`
 
 ---
 
