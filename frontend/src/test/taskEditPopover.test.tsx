@@ -3,7 +3,7 @@
 // and moved focus to the Priority button, so only one character could be typed
 // (bug report 2026-10-07). Pinned so the popover never moves focus on re-render.
 
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AppData, Task } from '../domain/types'
@@ -44,6 +44,15 @@ function seed(tasks: Task[]): void {
     toasts: [],
     hydrated: true,
   })
+}
+
+async function openPopover(task: Task) {
+  seed([task])
+  render(<TaskList />)
+  const user = userEvent.setup()
+  await user.click(screen.getByRole('button', { name: 'Edit task (E to rename)' }))
+  await screen.findByRole('dialog')
+  return user
 }
 
 describe('task edit popover keeps focus while typing', () => {
@@ -93,5 +102,38 @@ describe('task edit popover keeps focus while typing', () => {
     expect(inDialog.length).toBeGreaterThan(0)
     expect(inDialog.every((c) => c.visibility === 'visible')).toBe(true)
     expect(document.activeElement).toBe(medium)
+  })
+
+  it('typing in the Add-a-tag input keeps focus and the full draft', async () => {
+    const task = makeTask({ title: 'Buy' })
+    const user = await openPopover(task)
+    const input = screen.getByPlaceholderText('Add a tag and press Enter')
+    await user.click(input)
+    await user.type(input, 'travel')
+    expect(input).toHaveValue('travel')
+    expect(document.activeElement).toBe(input)
+
+    await user.keyboard('{Enter}')
+    await waitFor(() => {
+      const { tags, tasks } = useAppStore.getState()
+      expect(tags.map((t) => t.name)).toEqual(['travel'])
+      expect(tasks[0].tagIds).toEqual([tags[0].id])
+    })
+    expect(input).toHaveValue('')
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('Tab from the Notes textarea wraps to the first priority button', async () => {
+    const user = await openPopover(makeTask())
+    await user.click(screen.getByLabelText('Notes'))
+    await user.tab()
+    expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'None' }))
+  })
+
+  it('Shift+Tab from the first priority button wraps to the Notes textarea', async () => {
+    const user = await openPopover(makeTask())
+    screen.getByRole('radio', { name: 'None' }).focus()
+    await user.tab({ shift: true })
+    expect(document.activeElement).toBe(screen.getByLabelText('Notes'))
   })
 })
