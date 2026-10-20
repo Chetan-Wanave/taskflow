@@ -103,6 +103,8 @@ Test 4 additionally spied `patchTask` for exactly **one** call on the Escape pat
 
 **Commit**: `fix(frontend): Escape no longer commits the Notes draft twice (SPEC NOTES-5)`
 
+**Status**: DONE 2026-10-20 — red (2 calls) → green after `pendingNotes` ref in `TaskEditPopover.tsx`; suite 181 passed; `tsc` clean.
+
 ---
 
 ## T3 [P] [US2] Cover the second Popover consumer: QuickAdd tag picker (optional)

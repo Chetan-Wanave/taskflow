@@ -1,6 +1,6 @@
 // The single crafted editing surface: priority, due date, tags, notes.
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { DatePicker } from '../../components/DatePicker'
 import { IconFlag } from '../../components/icons'
 import { Popover } from '../../components/Popover'
@@ -30,12 +30,18 @@ export function TaskEditPopover({ task, anchor, open, onClose }: TaskEditPopover
   const patchTask = useAppStore((s) => s.patchTask)
   const addTag = useAppStore((s) => s.addTag)
   const [notesDraft, setNotesDraft] = useState<string | null>(null)
+  // Mirrors the uncommitted draft but is cleared synchronously on commit: Escape
+  // commits via close() and then blurs the textarea inside the same event, and the
+  // blur's commitNotes would otherwise still see the stale notesDraft state.
+  const pendingNotes = useRef<string | null>(null)
   const [newTag, setNewTag] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   const commitNotes = () => {
-    if (notesDraft === null) return
-    const value = notesDraft.trim().length === 0 ? null : notesDraft
+    const draft = pendingNotes.current
+    if (draft === null) return
+    pendingNotes.current = null
+    const value = draft.trim().length === 0 ? null : draft
     if (value !== task.notes) void patchTask(task.id, { notes: value })
     setNotesDraft(null)
   }
@@ -179,7 +185,10 @@ export function TaskEditPopover({ task, anchor, open, onClose }: TaskEditPopover
           maxLength={10000}
           placeholder="Add notes…"
           value={notesDraft ?? task.notes ?? ''}
-          onChange={(e) => setNotesDraft(e.target.value)}
+          onChange={(e) => {
+            pendingNotes.current = e.target.value
+            setNotesDraft(e.target.value)
+          }}
           onBlur={commitNotes}
         />
       </div>

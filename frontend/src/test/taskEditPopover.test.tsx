@@ -181,4 +181,21 @@ describe('task edit popover keeps focus while typing', () => {
       restore()
     }
   })
+
+  // Escape runs close() (commit) and then anchor.focus(), which blurs the textarea
+  // and fires its onBlur commit from the same render's closure.
+  it('Escape writes the Notes draft exactly once', async () => {
+    const { spy, restore } = spyOnPatchTask()
+    try {
+      const user = await openPopover(makeTask())
+      const notes = screen.getByLabelText('Notes')
+      await user.click(notes)
+      await user.type(notes, 'Bring ID')
+      await user.keyboard('{Escape}')
+      await waitFor(() => expect(useAppStore.getState().tasks[0].notes).toBe('Bring ID'))
+      expect(spy).toHaveBeenCalledTimes(1)
+    } finally {
+      restore()
+    }
+  })
 })
