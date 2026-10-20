@@ -3,10 +3,10 @@
 // and moved focus to the Priority button, so only one character could be typed
 // (bug report 2026-10-07). Pinned so the popover never moves focus on re-render.
 
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { AppData, Task } from '../domain/types'
+import type { AppData, Tag, Task } from '../domain/types'
 import { TaskList } from '../features/tasks/TaskList'
 import { STORAGE_KEY } from '../storage/migration'
 import { useAppStore } from '../store/useAppStore'
@@ -30,12 +30,12 @@ function makeTask(overrides: Partial<Task> = {}): Task {
   }
 }
 
-function seed(tasks: Task[]): void {
-  const envelope: AppData = { schemaVersion: 2, tasks, tags: [] }
+function seed(tasks: Task[], tags: Tag[] = []): void {
+  const envelope: AppData = { schemaVersion: 2, tasks, tags }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope))
   useAppStore.setState({
     tasks,
-    tags: [],
+    tags,
     filter: 'all',
     search: '',
     tagFilterId: null,
@@ -46,8 +46,8 @@ function seed(tasks: Task[]): void {
   })
 }
 
-async function openPopover(task: Task) {
-  seed([task])
+async function openPopover(task: Task, tags: Tag[] = []) {
+  seed([task], tags)
   render(<TaskList />)
   const user = userEvent.setup()
   await user.click(screen.getByRole('button', { name: 'Edit task (E to rename)' }))
@@ -197,5 +197,47 @@ describe('task edit popover keeps focus while typing', () => {
     } finally {
       restore()
     }
+  })
+
+  it('pointer-down outside commits the Notes draft and closes the popover', async () => {
+    const user = await openPopover(makeTask())
+    const notes = screen.getByLabelText('Notes')
+    await user.click(notes)
+    await user.type(notes, 'Call')
+    await user.pointer({ keys: '[MouseLeft>]', target: document.body })
+
+    expect(screen.queryByRole('dialog')).toBeNull()
+    await waitFor(() => expect(useAppStore.getState().tasks[0].notes).toBe('Call'))
+  })
+
+  it('clicking a tag chip, a priority button or the Due date button keeps focus on that control', async () => {
+    const tag: Tag = { id: crypto.randomUUID(), name: 'work', color: null, createdAt: NOW }
+    const user = await openPopover(makeTask({ priority: 'MEDIUM' }), [tag])
+
+    for (const control of [
+      screen.getByRole('button', { name: '#work' }),
+      screen.getByRole('radio', { name: 'High' }),
+      screen.getByRole('button', { name: 'No due date' }),
+    ]) {
+      await user.click(control)
+      expect(document.activeElement).toBe(control)
+    }
+  })
+
+  it('a store update while typing keeps focus and the Notes draft', async () => {
+    const task = makeTask({ priority: 'MEDIUM' })
+    const user = await openPopover(task)
+    const notes = screen.getByLabelText('Notes')
+    await user.click(notes)
+    await user.type(notes, 'ab')
+
+    await act(async () => {
+      await useAppStore.getState().patchTask(task.id, { priority: 'HIGH' })
+    })
+    expect(useAppStore.getState().tasks[0].priority).toBe('HIGH')
+    await user.keyboard('c')
+
+    expect(notes).toHaveValue('abc')
+    expect(document.activeElement).toBe(notes)
   })
 })
